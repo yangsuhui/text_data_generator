@@ -4,8 +4,8 @@
 2、Also add functions to generate Chinese and english or other langs with varying length!
 
 ## Generate text detection data(e.g. PSENET)
-## examples of generate data
-<div align=left><img src=./imgs/img_1.jpg width="200" height='150' alt='RL基本模型'/></div>
+
+<div align=left><img src=./imgs/img_1.jpg width="200" height='150' alt='example pics'/></div>
 corresponding lables: 542,257,665,257,665,270,542,270,Riders of Rohan in gt_img_1.txt in img directory.
 
 ## Generate text recognition data(e.g. CRNN)
