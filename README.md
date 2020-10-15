@@ -1,14 +1,33 @@
 # New characteristics
-Add the functions to generate datas for text detection and recognition at the same time!
-Also could functions to generate Chinese and english or other langs with varying length!
+1、Add the functions to generate datas for text detection and recognition at the same time!
 
-# Origin readme
+2、Also add functions to generate Chinese and english or other langs with varying length!
 
-# Text Renderer
+## Generate text detection data(e.g. PSENET)
+## examples of generate data
+<div align=left><img src=./imgs/img_1.jpg width="200" height='150' alt='RL基本模型'/></div>
+corresponding lables: 542,257,665,257,665,270,542,270,Riders of Rohan in gt_img_1.txt in img directory.
+
+## Generate text recognition data(e.g. CRNN)
+![img_r_1.png](./imgs/img_r_1.png)
+
+![img_r_2.png](./imgs/img_r_2.png)
+
+![img_r_3.png](./imgs/img_r_3.png)
+
+![img_r_4.png](./imgs/img_r_4.png)
+
+# Todo
+1、Add multi sentences with one or more langs in one pic.
+
+2、Add curve and multi derections texts in one pic.
+
+# Origin readme(Text Renderer)
+
 Generate text images for training deep learning OCR model (e.g. [CRNN](https://github.com/bgshih/crnn)).
 Support both latin and non-latin text.
 
-# Setup
+## Setup
 - Ubuntu 16.04
 - python 3.5+
 
@@ -17,7 +36,7 @@ Install dependencies:
 pip3 install -r requirements.txt
 ```
 
-# Demo
+## Demo
 By default, simply run `python3 main.py` will generate 20 text images
 and a labels.txt file in `output/default/`.
 
@@ -27,7 +46,7 @@ and a labels.txt file in `output/default/`.
 ![example3.jpg](./imgs/example3.jpg)
 ![example4.jpg](./imgs/example4.jpg)
 
-# Use your own data to generate image
+## Use your own data to generate image
 1. Please run `python3 main.py --help` to see all optional arguments and their meanings.
 And put your own data in corresponding folder.
 
@@ -55,7 +74,7 @@ new config file and use it by `--config_file` option), here are some examples:
 
 3. Run `main.py` file.
 
-# Strict mode
+## Strict mode
 For no-latin language(e.g Chinese), it's very common that some fonts only support
 limited chars. In this case, you will get bad results like these:
 
@@ -69,7 +88,7 @@ Select fonts that support all chars in `--chars_file` is annoying.
 Run `main.py` with `--strict` option, renderer will retry get text from
 corpus during generate processing until all chars are supported by a font.
 
-# Tools
+## Tools
 You can use `check_font.py` script to check how many chars your font not support in `--chars_file`:
 ```bash
 python3 tools/check_font.py
@@ -81,7 +100,7 @@ chars not supported(4971):
 []
 ```
 
-# Generate image using GPU
+## Generate image using GPU
 If you want to use GPU to make generate image faster, first compile opencv with CUDA.
 [Compiling OpenCV with CUDA support](https://www.pyimagesearch.com/2016/07/11/compiling-opencv-with-cuda-support/)
 
@@ -91,12 +110,12 @@ cd libs/gpu
 python3 setup.py build_ext --inplace
 ```
 
-# Debug mode
+## Debug mode
 Run `python3 main.py --debug` will save images with extract information.
 You can see how perspectiveTransform works and all bounding/rotated boxes.
 
 ![debug_demo](./imgs/debug_demo.jpg)
 
 
-# Todo
+## Todo
 See https://github.com/Sanster/text_renderer/projects/1
