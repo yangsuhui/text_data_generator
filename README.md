@@ -5,7 +5,7 @@
 
 ## Generate text detection data(e.g. PSENET)
 
-<div align=left><img src=./imgs/img_1.jpg width="200" height='150' alt='example pics'/></div>
+<div align=left><img src=./imgs/img_1.jpg width="400" height='300' alt='example pics'/></div>
 corresponding lables: 542,257,665,257,665,270,542,270,Riders of Rohan in gt_img_1.txt in img directory.
 
 ## Generate text recognition data(e.g. CRNN)
@@ -22,6 +22,7 @@ corresponding lables: 542,257,665,257,665,270,542,270,Riders of Rohan in gt_img_
 
 2、Add curve and multi derections texts in one pic.
 
+3、Add vertical texts generation.
 # Origin readme(Text Renderer)
 
 Generate text images for training deep learning OCR model (e.g. [CRNN](https://github.com/bgshih/crnn)).
