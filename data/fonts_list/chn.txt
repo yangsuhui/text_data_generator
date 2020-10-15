@@ -1,0 +1,25 @@
+./data/fonts/complex_fonts/simsun.ttc
+./data/fonts/complex_fonts/Dengb.ttf
+./data/fonts/complex_fonts/Dengl.ttf
+./data/fonts/complex_fonts/SimSun.ttf
+./data/fonts/complex_fonts/Deng.ttf
+./data/fonts/complex_fonts/msyhl.ttc
+./data/fonts/complex_fonts/msyhbd.ttc
+./data/fonts/complex_fonts/msyh.ttc
+./data/fonts/complex_fonts/simsun.ttc
+./data/fonts/complex_fonts/Dengb.ttf
+./data/fonts/complex_fonts/simhei.ttf
+./data/fonts/complex_fonts/Dengl.ttf
+./data/fonts/chn/方正楷体GBK.ttf
+./data/fonts/complex_fonts/SimSun.ttf
+./data/fonts/complex_fonts/MHei PRC Light.ttf
+./data/fonts/complex_fonts/simfang.ttf
+./data/fonts/complex_fonts/msjh.ttc
+./data/fonts/complex_fonts/Deng.ttf
+./data/fonts/chn/香港标准宋体繁体.ttc
+./data/fonts/complex_fonts/msyhl.ttc
+./data/fonts/complex_fonts/simkai.ttf
+./data/fonts/complex_fonts/msyhbd.ttc
+./data/fonts/complex_fonts/msjhl.ttc
+./data/fonts/complex_fonts/msyh.ttc
+./data/fonts/complex_fonts/msjhbd.ttc
