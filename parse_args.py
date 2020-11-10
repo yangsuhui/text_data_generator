@@ -6,7 +6,7 @@ import os
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--num_img', type=int, default=500, help="Number of images to generate")
+    parser.add_argument('--num_img', type=int, default=100, help="Number of images to generate")
 
     parser.add_argument('--length', type=int, default=10,
                         help='Chars(chn) or words(eng) in a image. For eng corpus mode, default length is 3')
@@ -28,33 +28,33 @@ def parse_args():
                         help='Fonts file path to use')
 
     ##背景圖片路徑
-    parser.add_argument('--bg_dir', type=str, default='./data/bg',
+    parser.add_argument('--bg_dir', type=str, default='./data/bg/test_v',
                         help="Some text images(according to your config in yaml file) will"
                              "use pictures in this folder as background")
 
     ##字典txt的路徑
-    parser.add_argument('--chars_file', type=str, default='./data/chars/new_complex_simplified.txt',
+    parser.add_argument('--chars_file', type=str, default='./data/chars/new_complex_simplified_without_space.txt',
                         help='Chars allowed to be appear in generated images.')
 
     ##chn和eng時，依然會過濾出char file文件中字符外的字符
-    parser.add_argument('--corpus_mode', type=str, default='eng', choices=['random', 'chn', 'eng', 'list'],
+    parser.add_argument('--corpus_mode', type=str, default='chn', choices=['random', 'chn', 'eng', 'list'],
                         help='Different corpus type have different load/get_sample method'
                              'random: random pick chars from chars file'
                              'chn: pick continuous chars from corpus'
                              'eng: pick continuous words from corpus, space is included in label')
 
     ##語料txt文件的路徑
-    parser.add_argument('--corpus_dir', type=str, default="./data/english_corpus",
+    parser.add_argument('--corpus_dir', type=str, default="./data/chn_corpus",
                         help='When corpus_mode is chn or eng, text on image will randomly selected from corpus.'
                              'Recursively find all txt file in corpus_dir')
 
 
     ##生成圖片放在output_dir/{tag}路徑下
-    parser.add_argument('--output_dir', type=str, default='/data/nfs/yangsuhui/data/complex_font_generater_six', help='Images save dir')
+    parser.add_argument('--output_dir', type=str, default='/data/nfs/yangsuhui/data/complex_font_generater_ten', help='Images save dir')
 
     parser.add_argument('--tag', type=str, default='images', help='output images are saved under output_dir/{tag} dir')
 
-
+    parser.add_argument('--direction', type=str, default='horizonal', help='The class to generate characters')
     ##debug為true，程序運行時print一些中間運行的結果信息
     parser.add_argument('--debug', action='store_true', default=False, help="output uncroped image")
 
@@ -75,7 +75,6 @@ def parse_args():
     flags.save_dir = os.path.join(flags.output_dir, 'recognition', flags.tag)
     flags.save_dir_det = os.path.join(flags.output_dir, 'detection', flags.tag)
 
-
     if os.path.exists(flags.bg_dir):
         num_bg = len(os.listdir(flags.bg_dir))
         flags.num_bg = num_bg
@@ -85,6 +84,9 @@ def parse_args():
 
     if not os.path.exists(flags.save_dir_det):
         os.makedirs(flags.save_dir_det)
+
+    # os.system('chmod 777 {}'.format(flags.save_dir))
+    # os.system('chmod 777 {}'.format(flags.save_dir_det))
 
     if flags.num_processes == 1:
         parser.error("num_processes min value is 2")

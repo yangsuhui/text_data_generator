@@ -49,7 +49,7 @@ class Renderer(object):
         if self.strict:
             self.font_unsupport_chars = font_utils.get_unsupported_chars(self.fonts, corpus.chars_file)
 
-    def gen_img(self, img_index):
+    def gen_img(self, img_index, direction='horizonal'):
 
         word, font, word_size = self.pick_font(img_index)
         self.dmsg("after pick font")
@@ -57,16 +57,28 @@ class Renderer(object):
         # Background's height should much larger than raw word image's height,
         # to make sure we can crop full word image after apply perspective
         #bg = self.gen_bg(width=word_size[0] * 8, height=word_size[1] * 8)
-        bg, coordinates_one, bg_ori = self.gen_bg(width = word_size[0] * 1.1, height= word_size[1] * 1.2)
-        word_img, text_box_pnts, word_color = self.draw_text_on_bg(word, font, bg)
-        self.dmsg("After draw_text_on_bg")
+        if direction == 'horizonal':
+            bg, coordinates_one, bg_ori = self.gen_bg(width = word_size[0] * 1.1, height= word_size[1] * 1.2)
+            word_img, text_box_pnts, word_color, word = self.draw_text_on_bg(word, font, bg, direction)
+            self.dmsg("After draw_text_on_horizonal_bg")
+        else:
+            bg, coordinates_one, bg_ori = self.gen_bg(width = word_size[0]/len(word) * 2, height= word_size[1] * len(word) * 2.2)
+            word_img, text_box_pnts, word_color, word = self.draw_text_on_bg(word, font, bg, direction)
+            self.dmsg("After draw_text_on_vertical_bg")
 
         bg_ori[coordinates_one[0]:coordinates_one[1], coordinates_one[2]:coordinates_one[3]] = word_img
+        # text_box_pnts_ori = [
+        #     [coordinates_one[2],coordinates_one[0]],
+        #     [coordinates_one[3],coordinates_one[0]],
+        #     [coordinates_one[3],coordinates_one[1]],
+        #     [coordinates_one[2],coordinates_one[1]]
+        # ]
+
         text_box_pnts_ori = [
-            [coordinates_one[2],coordinates_one[0]],
-            [coordinates_one[3],coordinates_one[0]],
-            [coordinates_one[3],coordinates_one[1]],
-            [coordinates_one[2],coordinates_one[1]]
+            [coordinates_one[2] + text_box_pnts[0][0],coordinates_one[0] + text_box_pnts[0][1]],
+            [coordinates_one[2] + text_box_pnts[1][0],coordinates_one[0] + text_box_pnts[1][1]],
+            [coordinates_one[2] + text_box_pnts[2][0],coordinates_one[0] + text_box_pnts[2][1]],
+            [coordinates_one[2] + text_box_pnts[3][0],coordinates_one[0] + text_box_pnts[3][1]]
         ]
 
         if self.debug:
@@ -262,7 +274,7 @@ class Renderer(object):
         b = np.random.randint(l_boundary[2], h_boundary[2])
         return b, g, r
 
-    def draw_text_on_bg(self, word, font, bg):
+    def draw_text_on_bg(self, word, font, bg, direction='horizonal'):
         """
         Draw word in the center of background
         :param word: word to draw
@@ -276,8 +288,13 @@ class Renderer(object):
         bg_width = bg.shape[1]
 
         word_size = self.get_word_size(font, word)
-        word_height = word_size[1]
-        word_width = word_size[0]
+
+        if direction == 'horizonal':
+            word_height = word_size[1]
+            word_width = word_size[0]
+        else:
+            word_height = word_size[1] * len(word)
+            word_width = word_size[0] / len(word)
 
         offset = font.getoffset(word)
 
@@ -296,20 +313,43 @@ class Renderer(object):
             word_color = 0
             #word_color = self.get_gray_word_color(bg, text_x, text_y, word_height, word_width)
 
-        ##random_space為true，表示繪製text是一個字符一個字符的化，字符間距隨機
-        if apply(self.cfg.random_space):
-            text_x, text_y, word_width, word_height = self.draw_text_with_random_space(draw, font, word, word_color,
-                                                                                       bg_width, bg_height)
-            np_img = np.array(pil_img).astype(np.float32)
-        else:
-            if apply(self.cfg.seamless_clone):
-                print('rrrrrrrrrrrrrrrrr')
-                np_img = self.draw_text_seamless(font, bg, word, word_color, word_height, word_width, offset)
-            else:
-                self.draw_text_wrapper(draw, word, text_x - offset[0], text_y - offset[1], font, word_color)
-                # draw.text((text_x - offset[0], text_y - offset[1]), word, fill=word_color, font=font)
-
+        if direction == 'horizonal':
+            ##random_space為true，表示繪製text是一個字符一個字符的化，字符間距隨機
+            if apply(self.cfg.random_space):
+                print('random-----------------')
+            #if True:
+                text_x, text_y, word_width, word_height, word = self.draw_text_with_random_space(draw, font, word, word_color,
+                                                                                        bg_width, bg_height)
                 np_img = np.array(pil_img).astype(np.float32)
+            else:
+                ##防止word超出bg
+                text_x = max(text_x - offset[0], 2)
+                text_y = max(text_y - offset[1], 1)
+                word_num = int(max((bg_width - text_x)/(word_width/len(word)) - 2, 1))
+                word = word[:word_num]
+                word_width = int(min((word_width/len(word)) * word_num + 0.6, bg_width - text_x))
+                word_height = min(word_height, bg_height - text_y)
+
+                if apply(self.cfg.seamless_clone):
+                    print('seamless_clone--------')
+                    ##防止word超出bg
+                    np_img = self.draw_text_seamless(font, bg, word, word_color, word_height, word_width, offset)
+                    #np_img = self.draw_text_seamless(font, bg, word, word_color, word_height, word_width, offset)
+                else:
+                    print('***********88')
+                    self.draw_text_wrapper(draw, word, text_x, text_y, font, word_color)
+                    #if new
+                    #self.draw_text_wrapper(draw, word, text_x - offset[0], text_y - offset[1], font, word_color)
+                    # draw.text((text_x - offset[0], text_y - offset[1]), word, fill=word_color, font=font)
+
+                    np_img = np.array(pil_img).astype(np.float32)
+        else:
+            if apply(self.cfg.random_space):
+                text_x, text_y, word_width, word_height, word = self.draw_vertical_text(draw, font, word, word_color, bg_width, bg_height, random_space=True) 
+            else:
+                text_x, text_y, word_width, word_height, word = self.draw_vertical_text(draw, font, word, word_color, bg_width, bg_height, random_space=False)  
+            
+            np_img = np.array(pil_img).astype(np.float32)
 
         text_box_pnts = [
             [text_x, text_y],
@@ -318,7 +358,7 @@ class Renderer(object):
             [text_x, text_y + word_height]
         ]
 
-        return np_img, text_box_pnts, word_color
+        return np_img, text_box_pnts, word_color, word
 
     def draw_text_seamless(self, font, bg, word, word_color, word_height, word_width, offset):
         # For better seamlessClone
@@ -371,6 +411,65 @@ class Renderer(object):
         else:
             return mixed_clone
 
+
+    def draw_vertical_text(self, draw, font, word, word_color, bg_width, bg_height, random_space='True'):
+        """ If random_space applied, text_x, text_y, word_width, word_height may change"""
+        width = 0
+        height = 0
+        chars_size = []
+        #y_offset = 10 ** 5
+        #x_offset = 10 ** 5
+        y_offset = 0
+        for c in word:
+            size = font.getsize(c)
+            chars_size.append(size)
+
+            height += size[1]
+
+            # set max char height as word height
+            if size[0] > width:
+                width = size[0]
+
+            # Min chars y offset as word y offset
+            # Assume only y offset
+            c_offset = font.getoffset(c)
+            if c_offset[1] > y_offset:
+                y_offset = c_offset[1]
+
+        max_character_h = max([x[1] for x in chars_size])
+        #char_space_width = int(height * np.random.uniform(self.cfg.random_space.min, self.cfg.random_space.max))
+        if random_space == True:
+            char_space_height = int(width * np.random.uniform(self.cfg.random_space.min, self.cfg.random_space.max))
+        else:
+            char_space_height = (bg_height - height)/(len(word) + 2)
+
+        #width += (char_space_width * (len(word) - 1))
+        height += (char_space_height * (len(word) - 1))
+
+        text_x = max(int((bg_width - width) / 2), 2)
+        text_y = max(int((bg_height - height) / 2 + y_offset), 3)
+
+        c_x = text_x
+        c_y = text_y
+
+        for i, c in enumerate(word):
+            # self.draw_text_wrapper(draw, c, c_x, c_y - y_offset, font, word_color, force_text_border)
+            #draw.text((c_x, c_y - y_offset), c, fill=word_color, font=font)
+            if c_y + max_character_h > bg_height:
+                break
+
+            draw.text((c_x, c_y), c, fill=word_color, font=font)
+            #c_x += (chars_size[i][0] + char_space_width)
+            c_y += (chars_size[i][1] + char_space_height) + y_offset
+        
+        height = c_y - char_space_height - y_offset
+
+        word = word[:i]
+
+        return int(text_x), int(text_y), int(width), int(height), word
+
+
+
     def draw_text_with_random_space(self, draw, font, word, word_color, bg_width, bg_height):
         """ If random_space applied, text_x, text_y, word_width, word_height may change"""
         width = 0
@@ -394,21 +493,30 @@ class Renderer(object):
 
         char_space_width = int(height * np.random.uniform(self.cfg.random_space.min, self.cfg.random_space.max))
 
+        max_character_w = max([x[0] for x in chars_size])
+
         width += (char_space_width * (len(word) - 1))
 
-        text_x = int((bg_width - width) / 2)
-        text_y = int((bg_height - height) / 2)
+        text_x = max(int((bg_width - width) / 2), 2)
+        text_y = max(int((bg_height - height) / 2 - y_offset), 3)
 
         c_x = text_x
         c_y = text_y
 
         for i, c in enumerate(word):
+
+            if c_x + max_character_w > bg_width:
+                break
             # self.draw_text_wrapper(draw, c, c_x, c_y - y_offset, font, word_color, force_text_border)
             draw.text((c_x, c_y - y_offset), c, fill=word_color, font=font)
 
             c_x += (chars_size[i][0] + char_space_width)
 
-        return text_x, text_y, width, height
+        width = c_x - char_space_width
+
+        word = word[:i+1]
+
+        return text_x, text_y, width, height, word
 
     def draw_text_wrapper(self, draw, text, x, y, font, text_color):
         """

@@ -79,9 +79,9 @@ def start_listen(q, fname):
 
 
 @retry
-def gen_img_retry(renderer, img_index):
+def gen_img_retry(renderer, img_index, direction='horizonal'):
     try:
-        return renderer.gen_img(img_index)
+        return renderer.gen_img(img_index, direction=direction)
     except Exception as e:
         print("Retry gen_img: %s" % str(e))
         traceback.print_exc()
@@ -96,7 +96,7 @@ def generate_img(img_index, q=None):
     # Make sure different process has different random seed
     np.random.seed()
 
-    im, word, bg, bg_ori_word_img, text_box_pnts_ori = gen_img_retry(renderer, img_index)
+    im, word, bg, bg_ori_word_img, text_box_pnts_ori = gen_img_retry(renderer, img_index, direction=flags.direction)
 
     base_name = '{:08d}'.format(img_index)
 
@@ -108,7 +108,7 @@ def generate_img(img_index, q=None):
         fname_bg_ori_word_img = os.path.join(flags.save_dir_det, 'img_' + base_name + '.jpg')
         cv2.imwrite(fname_bg_ori_word_img, bg_ori_word_img)
 
-        label = "{} {}".format(os.path.join(r'/data/nfs/yangsuhui/data/complex_font_generater_six/recognition/images',base_name+'.png'), word)
+        label = "{} {}".format(os.path.join(flags.output_dir,'recognition/images',base_name+'.png'), word)
 
         ##add bbox to save for training pse
         fname_det = os.path.join(flags.save_dir_det, 'gt_img_' + base_name + '.txt')
