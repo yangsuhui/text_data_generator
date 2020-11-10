@@ -3,10 +3,21 @@
 
 2、Also add functions to generate Chinese and english or other langs with varying length!
 
+3、Add the function of vertical texts generation!
+
+# Command
+```
+python main.py --strict --direction vertical
+```
+The direction is to confirm which texts direction you want to generate, the default value is horizonal.
+
 ## Generate text detection data(e.g. PSENET)
 
-<div align=left><img src=./imgs/img_1.jpg width="400" height='300' alt='example pics'/></div>
+<div align=left><img src=./imgs/img_1.jpg width="400" height='300' alt='example horizonal pics'/></div>
 corresponding lables: 542,257,665,257,665,270,542,270,Riders of Rohan in gt_img_1.txt in img directory.
+
+<div align=left><img src=./imgs/img_00000019.jpg width="400" height='300' alt='example vertical pics'/></div>
+corresponding lables: 645,6,666,6,666,396,645,396,有恐怖的感受，那就大大地增 in gt_img_2.txt in img directory.
 
 ## Generate text recognition data(e.g. CRNN)
 ![img_r_1.png](./imgs/img_r_1.png)
@@ -17,12 +28,13 @@ corresponding lables: 542,257,665,257,665,270,542,270,Riders of Rohan in gt_img_
 
 ![img_r_4.png](./imgs/img_r_4.png)
 
+![img_r_5.png](./imgs/img_r_5.png)
+
 # Todo
 1、Add multi sentences with one or more langs in one pic.
 
-2、Add curve and multi derections texts in one pic.
+2、Add curve and multi directions texts in one pic.
 
-3、Add vertical texts generation.
 # Origin readme(Text Renderer)
 
 Generate text images for training deep learning OCR model (e.g. [CRNN](https://github.com/bgshih/crnn)).
